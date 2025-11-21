@@ -1,0 +1,461 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --mx: 50vw;
+    --my: 50vh;
+    --h: 220; /* base hue, animated via JS */
+    --sat: 76%;
+    --lum: 64%;
+    --alpha: 0.55;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden;
+    /* Interactive aurora background driven by CSS variables */
+    background:
+        radial-gradient(1000px 1000px at var(--mx) var(--my), hsl(calc(var(--h) + 20) var(--sat) var(--lum) / var(--alpha)) 0%, transparent 60%),
+        radial-gradient(800px 800px at calc(100vw - var(--mx)) calc(100vh - var(--my)), hsl(calc(var(--h) + 160) var(--sat) var(--lum) / var(--alpha)) 0%, transparent 60%),
+        radial-gradient(650px 650px at calc(var(--mx) * 0.8) calc(var(--my) * 1.2), hsl(calc(var(--h) + 260) var(--sat) var(--lum) / var(--alpha)) 0%, transparent 60%),
+        linear-gradient(180deg, #0b1020 0%, #0b1020 100%);
+    background-attachment: fixed;
+}
+
+/* Subtle grain overlay to add texture without heavy animation */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 2px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 2px);
+    opacity: 0.05;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+    z-index: 1; /* ensure content sits above the ambient background overlay */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.screen {
+    display: none;
+    padding: 40px;
+    min-height: 500px;
+    animation: fadeIn 0.5s ease;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Welcome Screen */
+.welcome-content {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.logo {
+    margin-bottom: 30px;
+}
+
+.logo i {
+    font-size: 50px;
+    color: #3498db;
+    margin-bottom: 20px;
+    animation: pulse 3s infinite;
+    opacity: 0.9;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+.logo h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.logo h1 span {
+    color: #3498db;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.description {
+    font-size: 1.1rem;
+    color: #7f8c8d;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    margin-bottom: 30px;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.disclaimer {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 4px solid #3498db;
+}
+
+.disclaimer p {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.disclaimer i {
+    color: #3498db;
+    margin-right: 8px;
+}
+
+/* Questionnaire */
+.progress-bar {
+    height: 6px;
+    background: #edf2f7;
+    border-radius: 3px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.question-header {
+    margin-bottom: 30px;
+}
+
+.question-number {
+    color: #3498db;
+    font-weight: 600;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.question-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    color: #2c3e50;
+    margin-top: 10px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.options-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.option {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.option:hover {
+    transform: translateY(-3px);
+    border-color: #3498db;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.1);
+}
+
+.option.selected {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    border-color: #3498db;
+    color: white;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+}
+
+.option i {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.option-input {
+    display: none;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-secondary {
+    background: #ecf0f1;
+    color: #7f8c8d;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-secondary:hover {
+    background: #d5dbdb;
+    color: #2c3e50;
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Results Screen */
+.results-content {
+    text-align: center;
+}
+
+.result-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.result-card h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.risk-indicator {
+    margin-bottom: 30px;
+}
+
+.risk-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: conic-gradient(#2ecc71 0% 70%, #f39c12 70% 85%, #e74c3c 85% 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.risk-circle::before {
+    content: '';
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    background: white;
+    border-radius: 50%;
+}
+
+.risk-percentage {
+    position: relative;
+    font-size: 2.5rem;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    color: #2c3e50;
+}
+
+.risk-label {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #2c3e50;
+    letter-spacing: 0.5px;
+}
+
+.risk-details {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.risk-details h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.risk-details p {
+    color: #7f8c8d;
+    line-height: 1.6;
+}
+
+.recommendations {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.recommendations h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.recommendations ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.recommendations li {
+    padding: 10px 0 10px 30px;
+    position: relative;
+    color: #7f8c8d;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.recommendations li:last-child {
+    border-bottom: none;
+}
+
+.recommendations li:before {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: #2ecc71;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        border-radius: 15px;
+    }
+    
+    .screen {
+        padding: 25px;
+    }
+    
+    .logo h1 {
+        font-size: 2.5rem;
+    }
+    
+    .question-title {
+        font-size: 1.5rem;
+    }
+    
+    .options-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .risk-circle {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .risk-circle::before {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .risk-percentage {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .screen {
+        padding: 20px 15px;
+    }
+    
+    .logo h1 {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .question-title {
+        font-size: 1.3rem;
+    }
+    
+    .btn-primary {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
